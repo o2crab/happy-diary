@@ -62,8 +62,15 @@ run = [
 ]
 
 [tasks.check]
-description = "Lint、整形、型、API 型、文書一覧を検査する(書き換えなし)"
-depends = ["check:frontend", "check:python", "check:backend", "api:check", "docs:check"]
+description = "Lint、整形、型、API 型、デザイントークン、文書一覧を検査する(書き換えなし)"
+depends = [
+  "check:frontend",
+  "check:python",
+  "check:backend",
+  "api:check",
+  "design:check",
+  "docs:check",
+]
 
 [tasks."check:frontend"]
 description = "フロントエンドを検査する"
@@ -96,6 +103,16 @@ run = "bash scripts/api-types.sh"
 [tasks."api:check"]
 description = "生成済み API 型のズレを検出する"
 run = "bash scripts/api-types.sh --check"
+
+[tasks."design:tokens"]
+description = "ブランド色から M3 のカラートークンを生成する"
+dir = "frontend"
+run = "node scripts/gen-color-tokens.ts"
+
+[tasks."design:check"]
+description = "生成済みカラートークンのズレを検出する"
+dir = "frontend"
+run = "node scripts/gen-color-tokens.ts --check"
 
 [tasks."docs:check"]
 description = "README のドキュメント一覧と実ファイルを照合する"

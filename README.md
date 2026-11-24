@@ -27,3 +27,4 @@ mise run dev
 | README | プロジェクト概要、起動手順、ドキュメント一覧 | `README.md` |
 | Claude 向けルール | Claude Code が守るルール | `CLAUDE.md` |
 | 開発ガイド | アプリ構成、開発環境、コマンド、運用ルール | `docs/DEV_GUIDE.md` |
+| デザインシステム | デザインの方向性、M3 トークン、部品の書き方 | `docs/DESIGN_SYSTEM.md` |

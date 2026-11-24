@@ -1,0 +1,26 @@
+/*
+ * 余白は 4px グリッド。M3 に余白トークンはないため、アプリ独自の --app- 接頭辞を使います。
+ * ブレークポイントは CSS 変数をメディアクエリで使えないため docs/DESIGN_SYSTEM.md に記載します。
+ */
+:root {
+  --app-space-0: 0;
+  --app-space-1: 4px;
+  --app-space-2: 8px;
+  --app-space-3: 12px;
+  --app-space-4: 16px;
+  --app-space-5: 20px;
+  --app-space-6: 24px;
+  --app-space-8: 32px;
+  --app-space-10: 40px;
+  --app-space-12: 48px;
+  --app-space-16: 64px;
+
+  /* window size class ごとの左右余白 */
+  --app-layout-margin: 16px;
+}
+
+@media (min-width: 600px) {
+  :root {
+    --app-layout-margin: 24px;
+  }
+}
