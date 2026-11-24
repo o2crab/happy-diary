@@ -1,0 +1,32 @@
+from pathlib import Path
+
+from fastapi.testclient import TestClient
+
+from app.config import Settings
+from app.main import create_app
+
+
+def test_health_creates_database_and_returns_ok(tmp_path: Path) -> None:
+    database_path = tmp_path / "nested" / "test.db"
+    settings = Settings(database_url=f"sqlite:///{database_path}")
+
+    with TestClient(create_app(settings)) as client:
+        response = client.get("/api/health")
+
+    assert response.status_code == 200
+    assert response.json() == {"status": "ok"}
+    assert database_path.exists()
+
+
+def test_static_files_do_not_hide_api(tmp_path: Path) -> None:
+    static_dir = tmp_path / "static"
+    static_dir.mkdir()
+    (static_dir / "index.html").write_text("<h1>web</h1>", encoding="utf-8")
+    settings = Settings(database_url=f"sqlite:///{tmp_path / 'test.db'}", static_dir=static_dir)
+
+    with TestClient(create_app(settings)) as client:
+        page = client.get("/")
+        health = client.get("/api/health")
+
+    assert page.text == "<h1>web</h1>"
+    assert health.json() == {"status": "ok"}

@@ -1,0 +1,53 @@
+{
+    "permissions": {
+        "deny": [
+            "Read(./.env)",
+            "Read(./.env.*)",
+            "Read(./secrets/**)",
+            "Bash(docker *)",
+            "Bash(git push *)"
+        ],
+        "ask": [
+            "Edit(./mise.toml)",
+            "Edit(./lefthook.yml)",
+            "Edit(./.claude/hooks/**)",
+            "Edit(./.github/workflows/**)"
+        ]
+    },
+    "hooks": {
+        "PostToolUse": [
+            {
+                "matcher": "Edit|Write",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/format.sh\""
+                    }
+                ]
+            }
+        ]
+    },
+    "sandbox": {
+        "enabled": true,
+        "failIfUnavailable": true,
+        "allowUnsandboxedCommands": false,
+        "autoAllowBashIfSandboxed": false,
+        "filesystem": {
+            "denyRead": [
+                "./.env",
+                "./.env.*",
+                "./secrets",
+                "~/.ssh",
+                "~/.aws"
+            ]
+        },
+        "network": {
+            "allowLocalBinding": true,
+            "allowedDomains": [
+                "registry.npmjs.org",
+                "pypi.org",
+                "files.pythonhosted.org"
+            ]
+        }
+    }
+}

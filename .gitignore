@@ -1,0 +1,43 @@
+# 秘密情報
+.env
+.env.*
+secrets/
+*.pem
+*.key
+
+# DB・個人データ
+data/
+*.db
+*.sqlite
+*.sqlite3
+*-wal
+*-shm
+
+# 依存関係
+node_modules/
+.venv/
+
+# ビルド成果物
+dist/
+build/
+*.tsbuildinfo
+
+# キャッシュ
+.cache/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.vite/
+
+# テスト成果物・ログ
+coverage/
+.coverage
+*.log
+
+# 個人設定・OS
+.claude/settings.local.json
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+.DS_Store

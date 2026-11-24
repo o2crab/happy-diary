@@ -1,0 +1,15 @@
+**
+!backend/pyproject.toml
+!backend/uv.lock
+!backend/app/**
+!frontend/**
+**/.env
+**/.env.*
+**/secrets
+**/node_modules
+**/dist
+**/.venv
+**/__pycache__
+**/*.db
+**/*.sqlite
+**/*.sqlite3

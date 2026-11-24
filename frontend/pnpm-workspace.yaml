@@ -1,0 +1,4 @@
+# 公開から7日未満のパッケージは導入しません(単位: 分)。
+minimumReleaseAge: 10080
+# sandbox の書き込み範囲に収めるため、store をプロジェクト内に置きます。
+storeDir: ../.cache/pnpm-store

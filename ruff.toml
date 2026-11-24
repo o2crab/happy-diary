@@ -1,0 +1,13 @@
+# リポジトリ全体の Python が対象です。除外は .gitignore と extend-exclude で指定します。
+target-version = "py313"
+line-length = 100
+# import の並び順で、backend/app を自プロジェクトのパッケージとして扱います。
+src = ["backend"]
+# 明示的に渡されたファイルにも除外を適用します(Git フックや Claude のフック向け)。
+force-exclude = true
+
+[lint]
+select = ["E", "F", "I", "UP", "B", "S"]
+
+[lint.per-file-ignores]
+"backend/tests/**" = ["S101"]
