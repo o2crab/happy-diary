@@ -1,0 +1,106 @@
+# 正確なバージョンは mise.lock で固定します。
+[settings]
+lockfile = true
+
+[tools]
+node = "24"
+python = "3.13"
+uv = "0.13"
+pnpm = "12"
+lefthook = "2"
+gitleaks = "8"
+
+# 秘密情報がコマンドへ渡らないよう、.env はここで読み込みません。
+[env]
+UV_CACHE_DIR = "{{config_root}}/.cache/uv"
+# pnpm のストア操作ロックを sandbox の書き込み範囲に置きます。
+XDG_RUNTIME_DIR = "{{config_root}}/.cache/runtime"
+
+[tasks.setup]
+description = "依存関係をロックファイルどおりに導入する"
+run = [
+  "mkdir -p -m 700 .cache/runtime",
+  "uv sync --project backend --locked",
+  "pnpm --dir frontend install --frozen-lockfile",
+]
+
+[tasks.dev]
+description = "API とフロントエンドの開発サーバーを起動する"
+depends = ["dev:api", "dev:web"]
+
+[tasks."dev:api"]
+description = "FastAPI を起動する"
+dir = "backend"
+run = "uv run --locked uvicorn app.main:app --reload --host 127.0.0.1 --port 8000"
+
+[tasks."dev:web"]
+description = "Vite を起動する"
+dir = "frontend"
+run = "pnpm run dev"
+
+[tasks.lint]
+description = "Lint を実行する(書き換えなし)"
+run = [
+  "pnpm --dir frontend run lint",
+  "uv run --project backend --locked ruff check",
+]
+
+# Ruff の対象はルートの ruff.toml、Biome の対象は frontend/biome.json で決まります。
+[tasks.format]
+description = "コードを整形する"
+run = [
+  "pnpm --dir frontend run format",
+  "uv run --project backend --locked ruff format",
+]
+
+[tasks.fix]
+description = "安全な自動修正と整形を適用する"
+run = [
+  "pnpm --dir frontend run fix",
+  "uv run --project backend --locked ruff check --fix",
+  "uv run --project backend --locked ruff format",
+]
+
+[tasks.check]
+description = "Lint、整形、型、API 型、文書一覧を検査する(書き換えなし)"
+depends = ["check:frontend", "check:python", "check:backend", "api:check", "docs:check"]
+
+[tasks."check:frontend"]
+description = "フロントエンドを検査する"
+dir = "frontend"
+run = ["pnpm run check", "pnpm run typecheck"]
+
+[tasks."check:python"]
+description = "リポジトリ全体の Python を Ruff で検査する"
+run = [
+  "uv run --project backend --locked ruff check",
+  "uv run --project backend --locked ruff format --check",
+]
+
+[tasks."check:backend"]
+description = "バックエンドの型を検査する"
+dir = "backend"
+run = "uv run --locked pyright"
+
+[tasks.test]
+description = "全テストを実行する"
+run = [
+  "uv run --directory backend --locked pytest",
+  "pnpm --dir frontend run test",
+]
+
+[tasks."api:types"]
+description = "OpenAPI から TypeScript の型を生成する"
+run = "bash scripts/api-types.sh"
+
+[tasks."api:check"]
+description = "生成済み API 型のズレを検出する"
+run = "bash scripts/api-types.sh --check"
+
+[tasks."docs:check"]
+description = "README のドキュメント一覧と実ファイルを照合する"
+run = "python scripts/docs_check.py"
+
+[tasks."db:reset"]
+description = "開発用 SQLite を削除する(次回起動時に再作成)"
+run = "rm -f backend/data/app.db backend/data/app.db-wal backend/data/app.db-shm"

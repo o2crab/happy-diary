@@ -1,0 +1,16 @@
+pre-commit:
+  parallel: true
+  commands:
+    gitleaks:
+      run: mise exec -- gitleaks git --pre-commit --staged --redact --no-banner
+    # 対象の判定は scripts/fix-files.sh と各ツールの設定に任せます。
+    fix:
+      run: mise exec -- bash scripts/fix-files.sh {staged_files}
+      stage_fixed: true
+
+pre-push:
+  commands:
+    check:
+      run: mise run check
+    test:
+      run: mise run test
