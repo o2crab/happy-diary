@@ -4,7 +4,7 @@
 
 ## アプリ構成
 
-- フロントエンド: React、TypeScript、Vite(`frontend/`)
+- フロントエンド: React、TypeScript、Vite(`frontend/`)。UI は Material Design 3 に準拠する([デザインシステム](DESIGN_SYSTEM.md))。
 - バックエンド: Python、FastAPI、SQLAlchemy(`backend/`)
 - DB: SQLite。機能が不足したら本格的な DBMS への移行を検討する。
 - API 型: FastAPI の OpenAPI から swagger-typescript-api で `frontend/src/api/schema.ts` を生成する。
