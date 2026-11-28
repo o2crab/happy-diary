@@ -13,11 +13,12 @@ test("仮説を作り、記録して振り返ると、これまでの一覧に�
 
   await expect(page.getByRole("heading", { level: 2, name: hypothesis })).toBeVisible();
 
-  await page.getByRole("checkbox", { name: "実行した" }).check();
-  await page
-    .getByRole("radiogroup", { name: "幸福度" })
-    .getByRole("radio", { name: "4 よい" })
-    .check();
+  // React Aria の input は見えない形で置かれ、見た目の要素が重なるため、利用者と同じくラベルを押す。
+  await page.getByText("実行した", { exact: true }).click();
+  await expect(page.getByRole("checkbox", { name: "実行した" })).toBeChecked();
+  const happiness = page.getByRole("radiogroup", { name: "幸福度" });
+  await happiness.getByText("4 よい", { exact: true }).click();
+  await expect(happiness.getByRole("radio", { name: "4 よい" })).toBeChecked();
   await page.getByRole("button", { name: "記録を保存" }).click();
   await expect(page.getByRole("status")).toHaveText("記録を保存しました");
 
@@ -25,10 +26,9 @@ test("仮説を作り、記録して振り返ると、これまでの一覧に�
   await expect(stats.getByRole("group", { name: "記録した日数" })).toContainText("1日");
 
   await page.getByRole("button", { name: "振り返る" }).click();
-  await page
-    .getByRole("radiogroup", { name: "判定" })
-    .getByRole("radio", { name: "支持された" })
-    .check();
+  const verdict = page.getByRole("radiogroup", { name: "判定" });
+  await verdict.getByText("支持された", { exact: true }).click();
+  await expect(verdict.getByRole("radio", { name: "支持された" })).toBeChecked();
   await page.getByRole("textbox", { name: "わかったこと" }).fill("歩いた日は気分がよかった");
   await page.getByRole("button", { name: "完了する" }).click();
 
