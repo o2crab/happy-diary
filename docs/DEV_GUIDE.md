@@ -42,6 +42,7 @@ TypeScript、JSON、CSS は Biome、Python は Ruff で検査と整形を行う�
 - 管理対象外のファイルは `.gitignore` を正とする。
 - `main` はブランチ保護し、PR と CI 成功を必須にする。
 - PR は `.github/pull_request_template.md` のチェックリストを埋める。
+- PR の作成と CI の確認には GitHub CLI(`gh`、mise で導入)を使う。認証(`gh auth login`)は人が自分のターミナルで行う。Claude の sandbox の中では、macOS のキーチェーンを使う証明書の検証とトークンの読み出しが止められ、`gh` は動かない。Claude はコマンドを示し、人が自分のターミナルで実行する。
 
 ## Claude を安全に使うために
 
@@ -51,7 +52,7 @@ TypeScript、JSON、CSS は Biome、Python は Ruff で検査と整形を行う�
 - 編集時は Auto mode に設定し、分類器による安全性の判定を実施させる。
 - 承認を求められた場合は、必ず内容を確認してから承認判断を下す。
 - `mise.toml`、`lefthook.yml`、`.claude/hooks/`、CI 定義は sandbox の外で実行されることがあるため、特に差分を確認する。
-- `git push`、`mise install`、`lefthook install` は人が自分のターミナルで実行する。
+- `git push`、`mise install`、`lefthook install`、`gh auth login` は人が自分のターミナルで実行する。
 - 日記は機微な個人情報のため、開発 DB にはダミーデータのみを使い、本番データをローカルへ持ち込まない。Claude は `backend/data/` を読めない設定にしている。
 
 Claude Code のフック(`.claude/hooks/`):
