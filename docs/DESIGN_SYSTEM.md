@@ -65,7 +65,21 @@ Happiness Spiral の UI は [Material Design 3](https://m3.material.io/)(M3)に�
 
 ## 共通部品
 
-`frontend/src/design/components/` に置く。現在あるのは `Button`、`IconButton`、`TextField`、`Card`、`TopAppBar`、`Icon` で、ほかの部品は画面開発で必要になった時点で追加する。
+`frontend/src/design/components/` に置く。現在あるのは次の部品で、ほかの部品は画面開発で必要になった時点で追加する。
+
+| 部品 | 用途 |
+| --- | --- |
+| `Button`、`IconButton` | 操作のボタン |
+| `TextField` | 1 行、複数行の入力 |
+| `Checkbox` | ラベル付きのはい・いいえの入力(実行したか など) |
+| `RadioGroup`、`Radio` | 選択肢から 1 つを選ぶ入力(幸福度、判定 など)。`orientation` で横並び、縦並びを選び、`errorMessage` でエラーを表示する |
+| `Card` | 操作しない表示用のカード |
+| `CardLink` | カード全体を押せるリンク(一覧の項目など) |
+| `NavigationBar` | 主な画面間の移動。600px 未満は画面下部のバー、600px 以上は左の rail として固定表示する。画面側は `--app-navigation-bar-height`(下)か `--app-navigation-rail-width`(左)の分を空ける。現在の項目は `currentHref` で渡し、`aria-current="page"` で示す。項目の `selectedIcon` に塗りのアイコン(`*-fill.svg`)を渡す |
+| `TopAppBar` | 画面上部のバー |
+| `Icon` | 装飾用のアイコン |
+
+`NavigationBar` と `CardLink` は React Aria の `Link` を使う。クライアント側のルーティングにつなぐときは、React Aria の `RouterProvider` で囲む。
 
 開発サーバーで <http://127.0.0.1:5173/__design> を開くと、トークンと部品の見本(`frontend/src/design/Gallery.tsx`)をライト、ダークで確認できる。見本は本番ビルドに含めない。部品を追加、変更したら見本にも載せる。
 

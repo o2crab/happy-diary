@@ -1,0 +1,93 @@
+/*
+ * Checkbox と Radio に共通の、ラベル付き選択コントロール。
+ * React Aria は data-* 属性をラベル(.control)に付けるため、state layer とフォーカスリングは
+ * 子の .target に描きます(interaction.module.css の stateLayer と同じ不透明度トークンを使います)。
+ */
+.control {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--app-space-1);
+  min-height: 48px;
+  padding-inline-end: var(--app-space-2);
+  color: var(--md-sys-color-on-surface);
+  font-family: var(--md-sys-typescale-body-large-font);
+  font-size: var(--md-sys-typescale-body-large-size);
+  line-height: var(--md-sys-typescale-body-large-line-height);
+  font-weight: var(--md-sys-typescale-body-large-weight);
+  letter-spacing: var(--md-sys-typescale-body-large-tracking);
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  --selection-control-color: var(--md-sys-color-on-surface-variant);
+  --selection-control-selected-color: var(--md-sys-color-primary);
+}
+
+.control[data-invalid] {
+  --selection-control-color: var(--md-sys-color-error);
+  --selection-control-selected-color: var(--md-sys-color-error);
+}
+
+.target {
+  position: relative;
+  isolation: isolate;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--md-sys-shape-corner-full);
+  color: var(--selection-control-color);
+}
+
+.control[data-selected] .target {
+  color: var(--selection-control-selected-color);
+}
+
+.target::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background-color: currentColor;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--md-sys-motion-duration-short2) linear;
+}
+
+.control[data-hovered] .target::before {
+  opacity: var(--md-sys-state-hover-state-layer-opacity);
+}
+
+.control[data-focus-visible] .target::before {
+  opacity: var(--md-sys-state-focus-state-layer-opacity);
+}
+
+.control[data-pressed] .target::before {
+  opacity: var(--md-sys-state-pressed-state-layer-opacity);
+}
+
+.control[data-focus-visible] .target {
+  outline: 3px solid var(--md-sys-color-secondary);
+  outline-offset: 2px;
+}
+
+.control[data-disabled] {
+  color: color-mix(
+    in srgb,
+    var(--md-sys-color-on-surface) calc(var(--md-sys-state-disabled-content-opacity) * 100%),
+    transparent
+  );
+  cursor: default;
+  --selection-control-color: color-mix(
+    in srgb,
+    var(--md-sys-color-on-surface) calc(var(--md-sys-state-disabled-content-opacity) * 100%),
+    transparent
+  );
+  --selection-control-selected-color: var(--selection-control-color);
+}
+
+.control[data-disabled] .target::before {
+  opacity: 0;
+}

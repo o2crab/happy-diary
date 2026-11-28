@@ -53,3 +53,13 @@
   flex-direction: column;
   gap: var(--app-space-4);
 }
+
+/* NavigationBar は position: fixed のため、transform で見本の枠を基準にします */
+.navigationPreview {
+  position: relative;
+  height: 240px;
+  overflow: hidden;
+  border: 1px solid var(--md-sys-color-outline-variant);
+  border-radius: var(--md-sys-shape-corner-medium);
+  transform: translateZ(0);
+}
