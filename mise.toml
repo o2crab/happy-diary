@@ -9,6 +9,8 @@ uv = "0.13"
 pnpm = "12"
 lefthook = "2"
 gitleaks = "8"
+# PR や CI の結果を確認する GitHub CLI。認証は人が gh auth login で行います。
+gh = "2"
 
 # 秘密情報がコマンドへ渡らないよう、.env はここで読み込みません。
 [env]
