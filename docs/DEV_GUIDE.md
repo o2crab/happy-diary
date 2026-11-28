@@ -38,7 +38,7 @@ TypeScript、JSON、CSS は Biome、Python は Ruff で検査と整形を行う�
 - 管理対象外のファイルは `.gitignore` を正とする。
 - `main` はブランチ保護し、PR と CI 成功を必須にする。
 - PR は `.github/pull_request_template.md` のチェックリストを埋める。
-- PR の作成と CI の確認には GitHub CLI(`gh`、mise で導入)を使う。認証(`gh auth login`)は人が自分のターミナルで行う。`api.github.com` は sandbox の許可ドメインに含めていないため、Claude が `gh` を使うときはコマンドごとに通信の許可を求める。
+- PR の作成と CI の確認には GitHub CLI(`gh`、mise で導入)を使う。認証(`gh auth login`)は人が自分のターミナルで行う。Claude の sandbox の中では、macOS のキーチェーンを使う証明書の検証とトークンの読み出しが止められ、`gh` は動かない。Claude はコマンドを示し、人が自分のターミナルで実行する。
 
 ## Claude を安全に使うために
 
