@@ -3,6 +3,7 @@ import "@fontsource/zen-maru-gothic/400.css";
 import "./design/index.css";
 import { lazy, StrictMode, Suspense } from "react";
 import { createRoot } from "react-dom/client";
+import { BrowserRouter } from "react-router";
 import { App } from "./App";
 import { ThemeProvider } from "./design/theme/ThemeProvider";
 
@@ -10,7 +11,15 @@ import { ThemeProvider } from "./design/theme/ThemeProvider";
 const Page =
   import.meta.env.DEV && location.pathname === "/__design"
     ? lazy(() => import("./design/Gallery").then((module) => ({ default: module.Gallery })))
-    : App;
+    : RoutedApp;
+
+function RoutedApp() {
+  return (
+    <BrowserRouter>
+      <App />
+    </BrowserRouter>
+  );
+}
 
 const root = document.getElementById("root");
 if (!root) {

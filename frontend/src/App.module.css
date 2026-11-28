@@ -1,24 +1,17 @@
+.shell {
+  min-height: 100dvh;
+  padding-bottom: var(--app-navigation-bar-height);
+}
+
+@media (min-width: 600px) {
+  .shell {
+    padding-bottom: 0;
+    padding-left: var(--app-navigation-rail-width);
+  }
+}
+
 .main {
   max-width: 840px;
   margin-inline: auto;
-  padding: var(--app-space-4) var(--app-layout-margin);
-}
-
-.status {
-  display: flex;
-  align-items: center;
-  gap: var(--app-space-3);
-}
-
-.status[data-state="ok"] {
-  color: var(--md-sys-color-on-surface);
-}
-
-.status[data-state="ok"] > span {
-  color: var(--md-sys-color-primary);
-}
-
-.status[data-state="error"] {
-  background-color: var(--md-sys-color-error-container);
-  color: var(--md-sys-color-on-error-container);
+  padding: var(--app-space-4) var(--app-layout-margin) var(--app-space-8);
 }
