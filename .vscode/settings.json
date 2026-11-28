@@ -2,6 +2,8 @@
   "editor.formatOnSave": true,
   "biome.configurationPath": "frontend/biome.json",
   "python.defaultInterpreterPath": "backend/.venv/bin/python",
+  "python.terminal.activateEnvironment": false,
+  "python-envs.terminal.autoActivationType": "off",
   "[typescript]": { "editor.defaultFormatter": "biomejs.biome" },
   "[typescriptreact]": { "editor.defaultFormatter": "biomejs.biome" },
   "[javascript]": { "editor.defaultFormatter": "biomejs.biome" },

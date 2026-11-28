@@ -19,6 +19,7 @@
 
 - 言語ランタイムと開発ツールは mise で管理する。バージョンは `mise.toml` と `mise.lock` を正とする。
 - コマンドは `mise tasks` で確認し、人、Claude、CI で同じタスクを使う。
+- Python は `uv run` で実行し、`backend/.venv` は有効化しない。VS Code でもターミナルでの自動有効化を切っている(`.vscode/settings.json`)。
 - pnpm は mise の環境で実行する。ストア操作ロックの場所(`XDG_RUNTIME_DIR`)を揃えるため。
 - シークレットは `.env` に環境変数として記述し、Git の管理対象外とする。雛形は `env.example` を使う。
 - `.env` は mise で読み込まず、FastAPI が実行時にのみ読む。
