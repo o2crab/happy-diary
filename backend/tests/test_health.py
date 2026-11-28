@@ -30,3 +30,18 @@ def test_static_files_do_not_hide_api(tmp_path: Path) -> None:
 
     assert page.text == "<h1>web</h1>"
     assert health.json() == {"status": "ok"}
+
+
+def test_spa_fallback_serves_index_but_keeps_api_404(tmp_path: Path) -> None:
+    static_dir = tmp_path / "static"
+    static_dir.mkdir()
+    (static_dir / "index.html").write_text("<h1>web</h1>", encoding="utf-8")
+    settings = Settings(database_url=f"sqlite:///{tmp_path / 'test.db'}", static_dir=static_dir)
+
+    with TestClient(create_app(settings)) as client:
+        page = client.get("/cycles/1")
+        api = client.get("/api/unknown")
+
+    assert page.status_code == 200
+    assert page.text == "<h1>web</h1>"
+    assert api.status_code == 404

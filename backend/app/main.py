@@ -6,13 +6,29 @@ from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 from sqlalchemy import text
+from starlette.exceptions import HTTPException
+from starlette.responses import Response
+from starlette.types import Scope
 
 from app.config import Settings
 from app.db import build_engine, init_db
+from app.routers import cycles  # モデルも読み込まれ、create_all の対象になる
 
 
 class HealthResponse(BaseModel):
     status: Literal["ok"]
+
+
+class SPAStaticFiles(StaticFiles):
+    """/api 以外の見つからないパスに index.html を返し、画面側のルーティングに任せる。"""
+
+    async def get_response(self, path: str, scope: Scope) -> Response:
+        try:
+            return await super().get_response(path, scope)
+        except HTTPException as exc:
+            if exc.status_code != 404 or path == "api" or path.startswith("api/"):
+                raise
+            return await super().get_response("index.html", scope)
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -34,8 +50,12 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             connection.execute(text("SELECT 1"))
         return HealthResponse(status="ok")
 
+    app.include_router(cycles.router)
+
     if resolved_settings.static_dir:
-        app.mount("/", StaticFiles(directory=resolved_settings.static_dir, html=True), name="web")
+        app.mount(
+            "/", SPAStaticFiles(directory=resolved_settings.static_dir, html=True), name="web"
+        )
 
     return app
 
