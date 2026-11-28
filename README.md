@@ -28,3 +28,6 @@ mise run dev
 | Claude 向けルール | Claude Code が守るルール | `CLAUDE.md` |
 | 開発ガイド | アプリ構成、開発環境、コマンド、運用ルール | `docs/DEV_GUIDE.md` |
 | デザインシステム | デザインの方向性、M3 トークン、部品の書き方 | `docs/DESIGN_SYSTEM.md` |
+| 機能追加スキル | Claude が機能を追加するときの手順 | `.claude/skills/add-feature/SKILL.md` |
+| レビューエージェント | Claude が PR 前に差分を確認する観点 | `.claude/agents/reviewer.md` |
+| PR テンプレート | PR の記入項目とチェックリスト | `.github/pull_request_template.md` |

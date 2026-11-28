@@ -15,6 +15,8 @@ gitleaks = "8"
 UV_CACHE_DIR = "{{config_root}}/.cache/uv"
 # pnpm のストア操作ロックを sandbox の書き込み範囲に置きます。
 XDG_RUNTIME_DIR = "{{config_root}}/.cache/runtime"
+# Playwright のブラウザを sandbox の書き込み範囲に置きます。
+PLAYWRIGHT_BROWSERS_PATH = "{{config_root}}/.cache/ms-playwright"
 
 [tasks.setup]
 description = "依存関係をロックファイルどおりに導入する"
@@ -62,13 +64,14 @@ run = [
 ]
 
 [tasks.check]
-description = "Lint、整形、型、API 型、デザイントークン、文書一覧を検査する(書き換えなし)"
+description = "Lint、整形、型、API 型、デザイントークン、色の直書き、文書一覧を検査する(書き換えなし)"
 depends = [
   "check:frontend",
   "check:python",
   "check:backend",
   "api:check",
   "design:check",
+  "design:lint",
   "docs:check",
 ]
 
@@ -96,6 +99,16 @@ run = [
   "pnpm --dir frontend run test",
 ]
 
+[tasks."e2e:install"]
+description = "E2E テスト用の chromium を導入する(sandbox の外で実行)"
+dir = "frontend"
+run = "pnpm exec playwright install chromium"
+
+[tasks.e2e]
+description = "画面をビルドし、Playwright で E2E テストを実行する"
+dir = "frontend"
+run = ["pnpm run build", "pnpm exec playwright test"]
+
 [tasks."api:types"]
 description = "OpenAPI から TypeScript の型を生成する"
 run = "bash scripts/api-types.sh"
@@ -113,6 +126,10 @@ run = "node scripts/gen-color-tokens.ts"
 description = "生成済みカラートークンのズレを検出する"
 dir = "frontend"
 run = "node scripts/gen-color-tokens.ts --check"
+
+[tasks."design:lint"]
+description = "CSS に色が直書きされていないか検査する"
+run = "python scripts/design_lint.py"
 
 [tasks."docs:check"]
 description = "README のドキュメント一覧と実ファイルを照合する"

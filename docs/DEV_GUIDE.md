@@ -37,6 +37,7 @@ TypeScript、JSON、CSS は Biome、Python は Ruff で検査と整形を行う�
 - コミットメッセージには `feat:`、`fix:`、`docs:`、`chore:` などの接頭辞を付ける。
 - 管理対象外のファイルは `.gitignore` を正とする。
 - `main` はブランチ保護し、PR と CI 成功を必須にする。
+- PR は `.github/pull_request_template.md` のチェックリストを埋める。
 
 ## Claude を安全に使うために
 
@@ -47,7 +48,24 @@ TypeScript、JSON、CSS は Biome、Python は Ruff で検査と整形を行う�
 - 承認を求められた場合は、必ず内容を確認してから承認判断を下す。
 - `mise.toml`、`lefthook.yml`、`.claude/hooks/`、CI 定義は sandbox の外で実行されることがあるため、特に差分を確認する。
 - `git push`、`mise install`、`lefthook install` は人が自分のターミナルで実行する。
-- 日記は機微な個人情報のため、開発 DB にはダミーデータのみを使い、本番データをローカルへ持ち込まない。
+- 日記は機微な個人情報のため、開発 DB にはダミーデータのみを使い、本番データをローカルへ持ち込まない。Claude は `backend/data/` を読めない設定にしている。
+
+Claude Code のフック(`.claude/hooks/`):
+
+- `guard.sh`: 編集前に、生成物(API 型、カラートークン)とロックファイルの手編集を止め、正しい生成コマンドを伝える。
+- `format.sh`: 編集後に自動修正、整形する。
+- `verify.sh`: 応答を終える前に、未コミットの変更があれば `mise run check` と `mise run test` を実行し、失敗を Claude に戻す。
+
+Claude 向けの手順とレビュー:
+
+- 機能追加の手順は `add-feature` スキル(`.claude/skills/add-feature/SKILL.md`)にまとめる。
+- PR 前のレビューは `reviewer` エージェント(`.claude/agents/reviewer.md`)で行う。
+
+## テスト
+
+- 単体テスト: バックエンドは pytest、フロントエンドは Vitest。`mise run test` で実行する。
+- E2E テスト: Playwright(`frontend/e2e/`)。ビルドした画面を FastAPI から配信し、一時 DB で chromium から操作する。`mise run e2e` で実行する。重いため `mise run test` と push 前のフックには含めず、CI で実行する。
+- ブラウザは `mise run e2e:install` で `.cache/ms-playwright` に入れる。ダウンロード先が sandbox の許可ドメインにないため、人が自分のターミナルで実行する。
 
 ## ドキュメント管理
 

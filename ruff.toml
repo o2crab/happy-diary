@@ -7,7 +7,7 @@ src = ["backend"]
 force-exclude = true
 
 [lint]
-select = ["E", "F", "I", "UP", "B", "S"]
+select = ["E", "F", "I", "UP", "B", "S", "SIM", "RUF", "PT", "C4", "RET"]
 
 [lint.per-file-ignores]
 "backend/tests/**" = ["S101"]

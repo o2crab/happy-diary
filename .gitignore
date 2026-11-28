@@ -33,6 +33,8 @@ __pycache__/
 # テスト成果物・ログ
 coverage/
 .coverage
+test-results/
+playwright-report/
 *.log
 
 # 個人設定・OS

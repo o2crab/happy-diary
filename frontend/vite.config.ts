@@ -13,6 +13,8 @@ export default defineConfig({
   },
   test: {
     environment: "jsdom",
+    // e2e/ は Playwright で実行します。
+    exclude: ["**/node_modules/**", "e2e/**"],
     restoreMocks: true,
   },
 });

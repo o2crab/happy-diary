@@ -1,20 +1,53 @@
 {
     "permissions": {
+        "allow": [
+            "Bash(mise run check*)",
+            "Bash(mise run test*)",
+            "Bash(mise run lint*)",
+            "Bash(mise run api:*)",
+            "Bash(git status*)",
+            "Bash(git diff*)",
+            "Bash(git log*)"
+        ],
         "deny": [
             "Read(./.env)",
             "Read(./.env.*)",
             "Read(./secrets/**)",
+            "Read(./backend/data/**)",
             "Bash(docker *)",
-            "Bash(git push *)"
+            "Bash(git push *)",
+            "Bash(git commit *--no-verify*)",
+            "Bash(git reset --hard*)",
+            "Bash(git clean *)",
+            "Bash(rm -rf *)"
         ],
         "ask": [
             "Edit(./mise.toml)",
             "Edit(./lefthook.yml)",
             "Edit(./.claude/hooks/**)",
-            "Edit(./.github/workflows/**)"
+            "Edit(./.claude/agents/**)",
+            "Edit(./.github/workflows/**)",
+            "Edit(./scripts/**)",
+            "Edit(./ruff.toml)",
+            "Edit(./frontend/biome.json)",
+            "Edit(./frontend/tsconfig.json)",
+            "Edit(./frontend/package.json)",
+            "Edit(./frontend/pnpm-workspace.yaml)",
+            "Edit(./backend/pyproject.toml)"
         ]
     },
     "hooks": {
+        "PreToolUse": [
+            {
+                "matcher": "Edit|Write",
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/guard.sh\""
+                    }
+                ]
+            }
+        ],
         "PostToolUse": [
             {
                 "matcher": "Edit|Write",
@@ -22,6 +55,17 @@
                     {
                         "type": "command",
                         "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/format.sh\""
+                    }
+                ]
+            }
+        ],
+        "Stop": [
+            {
+                "hooks": [
+                    {
+                        "type": "command",
+                        "command": "bash \"$CLAUDE_PROJECT_DIR/.claude/hooks/verify.sh\"",
+                        "timeout": 600
                     }
                 ]
             }
@@ -37,6 +81,7 @@
                 "./.env",
                 "./.env.*",
                 "./secrets",
+                "./backend/data",
                 "~/.ssh",
                 "~/.aws"
             ]
