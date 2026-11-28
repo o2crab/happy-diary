@@ -1,5 +1,5 @@
 from collections.abc import Iterator
-from datetime import date, timedelta
+from datetime import UTC, date, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -8,14 +8,17 @@ from fastapi.testclient import TestClient
 
 from app.config import Settings
 from app.main import create_app
+from app.routers.cycles import get_today, local_today
 
-TODAY = date.today()
+TODAY = date(2026, 1, 15)
 
 
 @pytest.fixture
 def client(tmp_path: Path) -> Iterator[TestClient]:
     settings = Settings(database_url=f"sqlite:///{tmp_path / 'test.db'}")
-    with TestClient(create_app(settings)) as test_client:
+    app = create_app(settings)
+    app.dependency_overrides[get_today] = lambda: TODAY
+    with TestClient(app) as test_client:
         yield test_client
 
 
@@ -181,3 +184,46 @@ def test_missing_cycle_returns_404(client: TestClient) -> None:
         "/api/cycles/999/complete", json={"verdict": "supported", "learnings": "ダミー"}
     )
     assert complete.status_code == 404
+
+
+@pytest.mark.parametrize(
+    ("now", "expected"),
+    [
+        (datetime(2026, 1, 1, 14, 59, tzinfo=UTC), date(2026, 1, 1)),
+        (datetime(2026, 1, 1, 15, 0, tzinfo=UTC), date(2026, 1, 2)),
+    ],
+)
+def test_local_today_uses_timezone_boundary(now: datetime, expected: date) -> None:
+    # 日本時間の 0 時(UTC 15 時)で日付が変わる
+    assert local_today("Asia/Tokyo", now) == expected
+
+
+def test_upsert_entry_follows_injected_today(tmp_path: Path) -> None:
+    settings = Settings(database_url=f"sqlite:///{tmp_path / 'test.db'}")
+    app = create_app(settings)
+    today = {"value": date(2026, 1, 1)}
+    app.dependency_overrides[get_today] = lambda: today["value"]
+
+    with TestClient(app) as client:
+        cycle_id = create_cycle(client, start_date="2026-01-01", end_date="2026-01-10")
+        url = f"/api/cycles/{cycle_id}/entries"
+        assert client.put(f"{url}/2026-01-02", json=entry_payload()).status_code == 422
+        today["value"] = date(2026, 1, 2)
+        assert client.put(f"{url}/2026-01-02", json=entry_payload()).status_code == 200
+
+
+@pytest.mark.parametrize(
+    ("timezone", "expected"), [("Pacific/Kiritimati", 200), ("Etc/GMT+12", 422)]
+)
+def test_upsert_entry_uses_app_timezone(tmp_path: Path, timezone: str, expected: int) -> None:
+    # UTC+14 の今日は、UTC-12 ではいつもまだ未来の日付になる
+    kiritimati_today = local_today("Pacific/Kiritimati").isoformat()
+    settings = Settings(database_url=f"sqlite:///{tmp_path / 'test.db'}", app_timezone=timezone)
+
+    with TestClient(create_app(settings)) as client:
+        cycle_id = create_cycle(client, start_date=kiritimati_today, end_date=kiritimati_today)
+        response = client.put(
+            f"/api/cycles/{cycle_id}/entries/{kiritimati_today}", json=entry_payload()
+        )
+
+    assert response.status_code == expected

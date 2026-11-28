@@ -4,7 +4,7 @@ import type { CycleDetail } from "../api/schema";
 import { Button } from "../design/components/Button";
 import { Card } from "../design/components/Card";
 import { EntryForm } from "./EntryForm";
-import { formatDate, formatPeriod, happinessLabel, VERDICT_LABELS } from "./format";
+import { formatDate, formatPeriod, happinessLabel, parseCycleId, VERDICT_LABELS } from "./format";
 import styles from "./pages.module.css";
 import { StatsList } from "./StatsList";
 import { EmptyState, ErrorMessage, Loading } from "./Status";
@@ -12,7 +12,12 @@ import { useLoad } from "./useLoad";
 
 /** サイクルの詳細。記録の入力と、記録の一覧を表示します。 */
 export function CycleDetailPage() {
-  const cycleId = Number(useParams().id);
+  const cycleId = parseCycleId(useParams().id);
+  if (cycleId === undefined) return <ErrorMessage>検証が見つかりません</ErrorMessage>;
+  return <CycleDetailLoader cycleId={cycleId} />;
+}
+
+function CycleDetailLoader({ cycleId }: { cycleId: number }) {
   const [state, setCycle] = useLoad((signal) => api.getCycle(cycleId, signal), [cycleId]);
 
   if (state.status === "loading") return <Loading />;

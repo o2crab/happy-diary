@@ -6,7 +6,7 @@ import { Button } from "../design/components/Button";
 import { CardLink } from "../design/components/CardLink";
 import { Radio, RadioGroup } from "../design/components/RadioGroup";
 import { TextField } from "../design/components/TextField";
-import { formatPeriod, VERDICT_LABELS, type Verdict } from "./format";
+import { formatPeriod, parseCycleId, VERDICT_LABELS, type Verdict } from "./format";
 import styles from "./pages.module.css";
 import { StatsList } from "./StatsList";
 import { ErrorMessage, Loading } from "./Status";
@@ -16,7 +16,12 @@ const VERDICTS: Verdict[] = ["supported", "not_supported", "inconclusive"];
 
 /** 振り返り。判定とわかったことを残してサイクルを完了します。 */
 export function ReviewPage() {
-  const cycleId = Number(useParams().id);
+  const cycleId = parseCycleId(useParams().id);
+  if (cycleId === undefined) return <ErrorMessage>検証が見つかりません</ErrorMessage>;
+  return <ReviewLoader cycleId={cycleId} />;
+}
+
+function ReviewLoader({ cycleId }: { cycleId: number }) {
   const [state] = useLoad((signal) => api.getCycle(cycleId, signal), [cycleId]);
 
   if (state.status === "loading") return <Loading />;

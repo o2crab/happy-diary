@@ -24,6 +24,7 @@
 }
 
 .item {
+  composes: targetHost from "./shared/interaction.module.css";
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -34,14 +35,13 @@
   padding-block: var(--app-space-3) var(--app-space-4);
   color: var(--md-sys-color-on-surface-variant);
   text-decoration: none;
-  outline: none;
   cursor: pointer;
   -webkit-tap-highlight-color: transparent;
 }
 
+/* state layer とフォーカスリングは、項目全体(.item)の data-* 属性で、インジケーターの形に描きます */
 .indicator {
-  position: relative;
-  isolation: isolate;
+  composes: stateLayerTarget focusRingTarget from "./shared/interaction.module.css";
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -50,36 +50,6 @@
   border-radius: var(--md-sys-shape-corner-full);
   transition: background-color var(--md-sys-motion-duration-medium1)
     var(--md-sys-motion-easing-emphasized);
-}
-
-/* state layer は項目全体の data-* 属性で、インジケーターの形に描きます */
-.indicator::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: inherit;
-  background-color: currentColor;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--md-sys-motion-duration-short2) linear;
-}
-
-.item[data-hovered] .indicator::before {
-  opacity: var(--md-sys-state-hover-state-layer-opacity);
-}
-
-.item[data-focus-visible] .indicator::before {
-  opacity: var(--md-sys-state-focus-state-layer-opacity);
-}
-
-.item[data-pressed] .indicator::before {
-  opacity: var(--md-sys-state-pressed-state-layer-opacity);
-}
-
-.item[data-focus-visible] .indicator {
-  outline: 3px solid var(--md-sys-color-secondary);
-  outline-offset: 2px;
 }
 
 .item[aria-current="page"] .indicator {

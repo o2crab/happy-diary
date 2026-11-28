@@ -72,3 +72,12 @@ it("完了済みのサイクルではフォームを出さない", async () => {
   expect(await screen.findByText("この検証はすでに完了しています")).toBeTruthy();
   expect(screen.queryByRole("button", { name: "完了する" })).toBeNull();
 });
+
+it("id が正の整数でなければ API を呼ばずに見つからない旨を表示する", async () => {
+  const fetchMock = mockFetch({});
+
+  renderApp("/cycles/abc/review");
+
+  expect((await screen.findByRole("alert")).textContent).toContain("検証が見つかりません");
+  expect(fetchMock).not.toHaveBeenCalled();
+});

@@ -77,10 +77,17 @@ export function EntryForm({
         happiness: Number(values.happiness),
         note: values.note,
       });
-      onSaved(await api.getCycle(cycle.id));
-      setSavedMessage("記録を保存しました");
     } catch (error) {
       setSaveError(saveErrorMessage(error));
+      setIsSaving(false);
+      return;
+    }
+    // 保存は済んでいるので、読み直しの失敗は保存の失敗と分けて伝える
+    try {
+      onSaved(await api.getCycle(cycle.id));
+      setSavedMessage("記録を保存しました");
+    } catch {
+      setSaveError("記録を保存しました。表示の更新に失敗したため、再読み込みしてください");
     } finally {
       setIsSaving(false);
     }

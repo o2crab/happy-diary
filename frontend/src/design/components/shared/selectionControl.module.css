@@ -1,9 +1,10 @@
 /*
  * Checkbox と Radio に共通の、ラベル付き選択コントロール。
  * React Aria は data-* 属性をラベル(.control)に付けるため、state layer とフォーカスリングは
- * 子の .target に描きます(interaction.module.css の stateLayer と同じ不透明度トークンを使います)。
+ * interaction.module.css の子要素版(targetHost / stateLayerTarget / focusRingTarget)で子の .target に描きます。
  */
 .control {
+  composes: targetHost from "./interaction.module.css";
   display: inline-flex;
   align-items: center;
   gap: var(--app-space-1);
@@ -28,8 +29,7 @@
 }
 
 .target {
-  position: relative;
-  isolation: isolate;
+  composes: stateLayerTarget focusRingTarget from "./interaction.module.css";
   display: inline-flex;
   flex: none;
   align-items: center;
@@ -42,35 +42,6 @@
 
 .control[data-selected] .target {
   color: var(--selection-control-selected-color);
-}
-
-.target::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  z-index: -1;
-  border-radius: inherit;
-  background-color: currentColor;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity var(--md-sys-motion-duration-short2) linear;
-}
-
-.control[data-hovered] .target::before {
-  opacity: var(--md-sys-state-hover-state-layer-opacity);
-}
-
-.control[data-focus-visible] .target::before {
-  opacity: var(--md-sys-state-focus-state-layer-opacity);
-}
-
-.control[data-pressed] .target::before {
-  opacity: var(--md-sys-state-pressed-state-layer-opacity);
-}
-
-.control[data-focus-visible] .target {
-  outline: 3px solid var(--md-sys-color-secondary);
-  outline-offset: 2px;
 }
 
 .control[data-disabled] {
@@ -86,8 +57,4 @@
     transparent
   );
   --selection-control-selected-color: var(--selection-control-color);
-}
-
-.control[data-disabled] .target::before {
-  opacity: 0;
 }

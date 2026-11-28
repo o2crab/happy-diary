@@ -18,14 +18,6 @@
   color: var(--md-sys-color-error);
 }
 
-.supporting {
-  color: color-mix(
-    in srgb,
-    var(--md-sys-color-on-surface) calc(var(--md-sys-state-disabled-content-opacity) * 100%),
-    transparent
-  );
-}
-
 .options {
   display: flex;
   flex-direction: column;
@@ -50,8 +42,15 @@
   color: var(--md-sys-color-error);
 }
 
-.group[data-disabled] .label,
-.group[data-disabled] .radio {
+.group[data-disabled] .label {
+  color: color-mix(
+    in srgb,
+    var(--md-sys-color-on-surface) calc(var(--md-sys-state-disabled-content-opacity) * 100%),
+    transparent
+  );
+}
+
+.radio {
   flex: none;
 }
 

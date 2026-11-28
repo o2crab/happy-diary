@@ -36,8 +36,10 @@ it("仮説、検証方法、期間、集計、記録を表示する", async () =
   expect(screen.getByText("ダミーの検証方法")).toBeTruthy();
   expect(screen.getByText("2026年11月20日〜2026年12月3日")).toBeTruthy();
   const stats = screen.getByRole("region", { name: "集計" });
-  expect(within(stats).getByText("記録した日数").nextSibling?.textContent).toBe("2日");
-  expect(within(stats).getByText("実行した日の平均幸福度").nextSibling?.textContent).toBe("4.0");
+  const recorded = within(stats).getByRole("group", { name: "記録した日数" });
+  expect(within(recorded).getByText("2日")).toBeTruthy();
+  const practiced = within(stats).getByRole("group", { name: "実行した日の平均幸福度" });
+  expect(within(practiced).getByText("4.0")).toBeTruthy();
   const entries = screen.getByRole("region", { name: "記録" });
   expect(within(entries).getByText("2026年11月27日")).toBeTruthy();
   expect(within(entries).getByText("ダミーのメモ")).toBeTruthy();
@@ -131,4 +133,34 @@ it("見つからなければその旨を表示する", async () => {
   renderApp("/cycles/9");
 
   expect((await screen.findByRole("alert")).textContent).toContain("検証が見つかりません");
+});
+
+it("保存後の読み直しだけ失敗したら、保存できたことと再読み込みを促す", async () => {
+  let saved = false;
+  mockFetch({
+    "GET /api/cycles/1": () =>
+      saved ? new Response(null, { status: 500 }) : Response.json(WITH_ENTRY),
+    "PUT /api/cycles/1/entries/2026-11-28": () => {
+      saved = true;
+      return Response.json(WITH_ENTRY.entries[1]);
+    },
+  });
+  renderApp("/cycles/1");
+
+  (await screen.findByRole("button", { name: "記録を保存" })).click();
+
+  const alert = await screen.findByRole("alert");
+  expect(alert.textContent).toContain(
+    "記録を保存しました。表示の更新に失敗したため、再読み込みしてください",
+  );
+  expect(alert.textContent).not.toContain("保存できませんでした");
+});
+
+it("id が正の整数でなければ API を呼ばずに見つからない旨を表示する", async () => {
+  const fetchMock = mockFetch({});
+
+  renderApp("/cycles/abc");
+
+  expect((await screen.findByRole("alert")).textContent).toContain("検証が見つかりません");
+  expect(fetchMock).not.toHaveBeenCalled();
 });

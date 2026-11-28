@@ -2,12 +2,15 @@ import datetime as dt
 from collections.abc import Sequence
 from statistics import mean
 from typing import Annotated, Any
+from zoneinfo import ZoneInfo
 
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request
 from fastapi import status as http
 from sqlalchemy import select
+from sqlalchemy.dialects.sqlite import insert as sqlite_insert
 from sqlalchemy.orm import Session
 
+from app.config import Settings
 from app.db import get_session
 from app.models import Cycle, CycleStatus, Entry, utc_now
 from app.schemas import (
@@ -23,6 +26,22 @@ from app.schemas import (
 router = APIRouter(prefix="/api/cycles", tags=["cycles"])
 
 SessionDep = Annotated[Session, Depends(get_session)]
+
+
+def local_today(timezone: str, now: dt.datetime | None = None) -> dt.date:
+    """指定したタイムゾーンでの今日の日付を返す。now を渡すとその時刻で判定する(テスト用)。"""
+    zone = ZoneInfo(timezone)
+    current = now.astimezone(zone) if now is not None else dt.datetime.now(zone)
+    return current.date()
+
+
+def get_today(request: Request) -> dt.date:
+    """設定のタイムゾーン(APP_TIMEZONE)での今日。テストでは dependency_overrides で差し替える。"""
+    settings: Settings = request.app.state.settings
+    return local_today(settings.app_timezone)
+
+
+TodayDep = Annotated[dt.date, Depends(get_today)]
 
 NOT_FOUND: dict[int | str, dict[str, Any]] = {404: {"description": "サイクルが見つからない"}}
 CONFLICT: dict[int | str, dict[str, Any]] = {409: {"description": "サイクルは完了済み"}}
@@ -116,27 +135,41 @@ def get_cycle(cycle_id: int, session: SessionDep) -> CycleDetail:
     responses={**NOT_FOUND, **CONFLICT},
 )
 def upsert_entry(
-    cycle_id: int, entry_date: dt.date, body: EntryUpsert, session: SessionDep
+    cycle_id: int, entry_date: dt.date, body: EntryUpsert, session: SessionDep, today: TodayDep
 ) -> EntryRead:
     cycle = _get_cycle(session, cycle_id)
     _ensure_active(cycle)
-    if not cycle.start_date <= entry_date <= dt.date.today():
+    if not cycle.start_date <= entry_date <= today:
         raise HTTPException(
             status_code=http.HTTP_422_UNPROCESSABLE_CONTENT,
             detail="記録できるのは開始日から今日までです",
         )
 
+    # 同じ日付への同時 PUT でも一意制約違反にならないよう、1文で upsert する。
+    now = utc_now()
+    insert = sqlite_insert(Entry).values(
+        cycle_id=cycle.id,
+        date=entry_date,
+        practiced=body.practiced,
+        happiness=body.happiness,
+        note=body.note,
+        created_at=now,
+        updated_at=now,
+    )
+    upsert = insert.on_conflict_do_update(
+        index_elements=[Entry.cycle_id, Entry.date],
+        set_={
+            "practiced": insert.excluded.practiced,
+            "happiness": insert.excluded.happiness,
+            "note": insert.excluded.note,
+            "updated_at": now,
+        },
+    )
+    session.execute(upsert)
+    session.commit()
     entry = session.scalars(
         select(Entry).where(Entry.cycle_id == cycle.id, Entry.date == entry_date)
-    ).one_or_none()
-    if entry is None:
-        entry = Entry(cycle_id=cycle.id, date=entry_date)
-        session.add(entry)
-    entry.practiced = body.practiced
-    entry.happiness = body.happiness
-    entry.note = body.note
-    session.commit()
-    session.refresh(entry)
+    ).one()
     return EntryRead.model_validate(entry)
 
 

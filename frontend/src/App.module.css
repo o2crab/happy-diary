@@ -1,6 +1,6 @@
 .shell {
   min-height: 100dvh;
-  padding-bottom: var(--app-navigation-bar-height);
+  padding-bottom: calc(var(--app-navigation-bar-height) + env(safe-area-inset-bottom));
 }
 
 @media (min-width: 600px) {

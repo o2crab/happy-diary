@@ -13,14 +13,16 @@ export function StatsList({ stats }: { stats: CycleStats }) {
       value: formatAverage(stats.avg_happiness_not_practiced),
     },
   ];
+  // 各項目をラベル付きのグループにし、支援技術やテストから項目名で取れるようにする
   return (
-    <dl className={styles.stats}>
+    <div className={styles.stats}>
       {items.map((item) => (
-        <div key={item.label} className={styles.stat}>
-          <dt>{item.label}</dt>
-          <dd>{item.value}</dd>
+        // biome-ignore lint/a11y/useSemanticElements: フォームではないため fieldset ではなく role="group" を使う
+        <div key={item.label} role="group" aria-label={item.label} className={styles.stat}>
+          <span className={styles.statLabel}>{item.label}</span>
+          <span className={styles.statValue}>{item.value}</span>
         </div>
       ))}
-    </dl>
+    </div>
   );
 }

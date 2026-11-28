@@ -50,3 +50,10 @@ export function formatPeriod(startDate: string, endDate: string): string {
 export function formatAverage(value: number | null): string {
   return value === null ? "—" : value.toFixed(1);
 }
+
+/** URL の id を正の整数として読みます。正の整数でなければ undefined を返します。 */
+export function parseCycleId(raw: string | undefined): number | undefined {
+  if (raw === undefined || !/^[1-9]\d*$/.test(raw)) return undefined;
+  const id = Number(raw);
+  return Number.isSafeInteger(id) ? id : undefined;
+}

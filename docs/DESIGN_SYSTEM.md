@@ -59,6 +59,8 @@ Happiness Spiral の UI は [Material Design 3](https://m3.material.io/)(M3)に�
 | medium | 600px 以上 840px 未満 | NavigationRail |
 | expanded | 840px 以上 | NavigationRail |
 
+NavigationRail は独立した部品にせず、`NavigationBar` 部品が兼ねる。600px 以上では同じ部品が左の rail の見た目に切り替わる。下部のバーで隠れないよう、本文の下余白には `env(safe-area-inset-bottom)` を足す(`index.html` の viewport に `viewport-fit=cover` を指定している)。
+
 ## テーマ切り替え
 
 `ThemeProvider` が設定を保持し、`<html data-theme>` に `light` か `dark` を付ける。システム設定に従う場合は属性を付けず、`prefers-color-scheme` で切り替わる。設定は `localStorage` に保存し、使えない環境ではそのセッション内だけ反映する。`index.html` の初期化スクリプトが描画前に保存済みの設定を反映し、ちらつきを防ぐ。
@@ -96,7 +98,7 @@ import addIcon from "@material-symbols/svg-400/rounded/add.svg";
 ### 部品の追加手順
 
 1. 操作できる部品は React Aria の部品をラップする。キーボード操作、フォーカス管理、ARIA 属性は React Aria に任せる。
-2. hover、focus、pressed の表現は `shared/interaction.module.css` の `stateLayer` と `focusRing` を `composes` で使う。React Aria が付ける `data-hovered`、`data-pressed`、`data-focus-visible`、`data-disabled` で状態を判定する。
+2. hover、focus、pressed の表現は `shared/interaction.module.css` の `stateLayer` と `focusRing` を `composes` で使う。React Aria が付ける `data-hovered`、`data-pressed`、`data-focus-visible`、`data-disabled` で状態を判定する。data-* 属性が付く要素と描く要素が違うとき(選択コントロールの輪、NavigationBar のインジケーターなど)は、属性が付く要素に `targetHost`、描く子要素に `stateLayerTarget` と `focusRingTarget` を `composes` で付ける。値を部品の CSS にコピーしない。
 3. 見た目は M3 の部品仕様(サイズ、色の役割、無効状態)に合わせ、角丸は上の割り当て表に従う。
 4. テストでは、ロールとラベルで部品を特定できること、無効状態、主要な操作を確認する。
 

@@ -1,5 +1,6 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
+from pathlib import PurePosixPath
 from typing import Literal
 
 from fastapi import FastAPI, Request
@@ -20,13 +21,19 @@ class HealthResponse(BaseModel):
 
 
 class SPAStaticFiles(StaticFiles):
-    """/api 以外の見つからないパスに index.html を返し、画面側のルーティングに任せる。"""
+    """/api 以外の見つからないパスに index.html を返し、画面側のルーティングに任せる。
+
+    最後の部分に拡張子があるパス(/assets/missing.js など)は静的ファイルの要求とみなし、
+    404 のままにする。
+    """
 
     async def get_response(self, path: str, scope: Scope) -> Response:
         try:
             return await super().get_response(path, scope)
         except HTTPException as exc:
-            if exc.status_code != 404 or path == "api" or path.startswith("api/"):
+            is_api = path == "api" or path.startswith("api/")
+            has_extension = PurePosixPath(path).suffix != ""
+            if exc.status_code != 404 or is_api or has_extension:
                 raise
             return await super().get_response("index.html", scope)
 
@@ -39,6 +46,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         engine = build_engine(resolved_settings.database_url)
         init_db(engine)
         app.state.engine = engine
+        app.state.settings = resolved_settings
         yield
         engine.dispose()
 

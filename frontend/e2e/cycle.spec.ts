@@ -22,7 +22,7 @@ test("仮説を作り、記録して振り返ると、これまでの一覧に�
   await expect(page.getByRole("status")).toHaveText("記録を保存しました");
 
   const stats = page.getByRole("region", { name: "集計" });
-  await expect(stats.locator('div:has(> dt:text-is("記録した日数")) > dd')).toHaveText("1日");
+  await expect(stats.getByRole("group", { name: "記録した日数" })).toContainText("1日");
 
   await page.getByRole("button", { name: "振り返る" }).click();
   await page
