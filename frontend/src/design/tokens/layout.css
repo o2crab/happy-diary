@@ -17,6 +17,10 @@
 
   /* window size class ごとの左右余白 */
   --app-layout-margin: 16px;
+
+  /* NavigationBar の大きさ。画面はこの分だけ下(compact)か左(medium 以上)を空けます */
+  --app-navigation-bar-height: 80px;
+  --app-navigation-rail-width: 80px;
 }
 
 @media (min-width: 600px) {

@@ -1,9 +1,11 @@
+from collections.abc import Iterator
 from pathlib import Path
 from typing import Any
 
+from fastapi import Request
 from sqlalchemy import Engine, create_engine, event
 from sqlalchemy.engine import make_url
-from sqlalchemy.orm import DeclarativeBase
+from sqlalchemy.orm import DeclarativeBase, Session
 
 
 class Base(DeclarativeBase):
@@ -31,3 +33,9 @@ def build_engine(database_url: str) -> Engine:
 
 def init_db(engine: Engine) -> None:
     Base.metadata.create_all(engine)
+
+
+def get_session(request: Request) -> Iterator[Session]:
+    engine: Engine = request.app.state.engine
+    with Session(engine) as session:
+        yield session

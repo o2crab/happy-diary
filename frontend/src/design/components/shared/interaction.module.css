@@ -1,13 +1,19 @@
 /*
  * M3 の state layer とフォーカスリング。React Aria が付ける data-* 属性で状態を判定します。
  * 部品の CSS から composes で使います。
+ *
+ * - stateLayer / focusRing: data-* 属性が付く要素そのものに描きます。
+ * - stateLayerTarget / focusRingTarget: 子要素に描く版です。状態は祖先の targetHost に付く
+ *   data-* 属性で判定します(例: ラベル全体が操作対象で、輪だけに state layer を描く選択コントロール)。
  */
-.stateLayer {
+.stateLayer,
+.stateLayerTarget {
   position: relative;
   isolation: isolate;
 }
 
-.stateLayer::before {
+.stateLayer::before,
+.stateLayerTarget::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -19,27 +25,33 @@
   transition: opacity var(--md-sys-motion-duration-short2) linear;
 }
 
-.stateLayer[data-hovered]::before {
+.stateLayer[data-hovered]::before,
+.targetHost[data-hovered] .stateLayerTarget::before {
   opacity: var(--md-sys-state-hover-state-layer-opacity);
 }
 
-.stateLayer[data-focus-visible]::before {
+.stateLayer[data-focus-visible]::before,
+.targetHost[data-focus-visible] .stateLayerTarget::before {
   opacity: var(--md-sys-state-focus-state-layer-opacity);
 }
 
-.stateLayer[data-pressed]::before {
+.stateLayer[data-pressed]::before,
+.targetHost[data-pressed] .stateLayerTarget::before {
   opacity: var(--md-sys-state-pressed-state-layer-opacity);
 }
 
-.stateLayer[data-disabled]::before {
+.stateLayer[data-disabled]::before,
+.targetHost[data-disabled] .stateLayerTarget::before {
   opacity: 0;
 }
 
-.focusRing {
+.focusRing,
+.targetHost {
   outline: none;
 }
 
-.focusRing[data-focus-visible] {
+.focusRing[data-focus-visible],
+.targetHost[data-focus-visible] .focusRingTarget {
   outline: 3px solid var(--md-sys-color-secondary);
   outline-offset: 2px;
 }

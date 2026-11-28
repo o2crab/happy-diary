@@ -1,0 +1,106 @@
+/* compact(600px 未満): 画面下部の Navigation bar */
+.navigation {
+  position: fixed;
+  inset-inline: 0;
+  bottom: 0;
+  z-index: 1;
+  box-sizing: content-box;
+  height: var(--app-navigation-bar-height);
+  padding-bottom: env(safe-area-inset-bottom);
+  background-color: var(--md-sys-color-surface-container);
+}
+
+.list {
+  display: flex;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.listItem {
+  flex: 1;
+  min-width: 0;
+}
+
+.item {
+  composes: targetHost from "./shared/interaction.module.css";
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--app-space-1);
+  box-sizing: border-box;
+  height: 100%;
+  padding-block: var(--app-space-3) var(--app-space-4);
+  color: var(--md-sys-color-on-surface-variant);
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* state layer とフォーカスリングは、項目全体(.item)の data-* 属性で、インジケーターの形に描きます */
+.indicator {
+  composes: stateLayerTarget focusRingTarget from "./shared/interaction.module.css";
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 32px;
+  border-radius: var(--md-sys-shape-corner-full);
+  transition: background-color var(--md-sys-motion-duration-medium1)
+    var(--md-sys-motion-easing-emphasized);
+}
+
+.item[aria-current="page"] .indicator {
+  background-color: var(--md-sys-color-secondary-container);
+  color: var(--md-sys-color-on-secondary-container);
+}
+
+.label {
+  max-width: 100%;
+  overflow: hidden;
+  font-family: var(--md-sys-typescale-label-medium-font);
+  font-size: var(--md-sys-typescale-label-medium-size);
+  line-height: var(--md-sys-typescale-label-medium-line-height);
+  font-weight: var(--md-sys-typescale-label-medium-weight);
+  letter-spacing: var(--md-sys-typescale-label-medium-tracking);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.item[aria-current="page"] .label {
+  color: var(--md-sys-color-on-surface);
+}
+
+/* medium 以上(600px 以上): 左の Navigation rail */
+@media (min-width: 600px) {
+  .navigation {
+    inset-block: 0;
+    inset-inline: 0 auto;
+    width: var(--app-navigation-rail-width);
+    height: auto;
+    padding-top: var(--app-space-12);
+    padding-bottom: 0;
+    background-color: var(--md-sys-color-surface);
+  }
+
+  .list {
+    flex-direction: column;
+    gap: var(--app-space-3);
+    height: auto;
+  }
+
+  .listItem {
+    flex: none;
+  }
+
+  .item {
+    height: auto;
+    padding-block: 0 var(--app-space-1);
+  }
+
+  .indicator {
+    width: 56px;
+  }
+}

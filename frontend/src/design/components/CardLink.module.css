@@ -1,0 +1,22 @@
+.cardLink {
+  composes: stateLayer focusRing from "./shared/interaction.module.css";
+  display: block;
+  text-decoration: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+  transition: box-shadow var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+}
+
+.cardLink[data-hovered] {
+  box-shadow: var(--md-sys-elevation-level1);
+}
+
+.cardLink[data-variant="elevated"][data-hovered] {
+  box-shadow: var(--md-sys-elevation-level2);
+}
+
+.cardLink[data-disabled] {
+  opacity: var(--md-sys-state-disabled-content-opacity);
+  box-shadow: none;
+  cursor: default;
+}

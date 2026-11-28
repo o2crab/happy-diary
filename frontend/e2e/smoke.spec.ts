@@ -1,10 +1,10 @@
 import { expect, test } from "@playwright/test";
 
-test("トップページで API に接続できる", async ({ page }) => {
+test("トップページにホームの見出しが表示される", async ({ page }) => {
   await page.goto("/");
 
   await expect(page.getByRole("heading", { name: "Happiness Spiral" })).toBeVisible();
-  await expect(page.getByText("API: 正常")).toBeVisible();
+  await expect(page.getByRole("heading", { level: 2, name: "いまの検証" })).toBeVisible();
 });
 
 test("テーマを切り替えると再読み込み後も保たれる", async ({ page }) => {

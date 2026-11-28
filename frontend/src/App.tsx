@@ -1,62 +1,73 @@
-import checkCircleIcon from "@material-symbols/svg-400/rounded/check_circle.svg";
-import errorIcon from "@material-symbols/svg-400/rounded/error.svg";
-import syncIcon from "@material-symbols/svg-400/rounded/sync.svg";
-import { useEffect, useState } from "react";
+import arrowBackIcon from "@material-symbols/svg-400/rounded/arrow_back.svg";
+import historyIcon from "@material-symbols/svg-400/rounded/history.svg";
+import historyFillIcon from "@material-symbols/svg-400/rounded/history-fill.svg";
+import homeIcon from "@material-symbols/svg-400/rounded/home.svg";
+import homeFillIcon from "@material-symbols/svg-400/rounded/home-fill.svg";
+import { useState } from "react";
+import { RouterProvider } from "react-aria-components";
+import { Route, Routes, useHref, useLocation, useNavigate } from "react-router";
 import styles from "./App.module.css";
-import type { HealthResponse } from "./api/schema";
-import { Card } from "./design/components/Card";
-import { Icon } from "./design/components/Icon";
+import { IconButton } from "./design/components/IconButton";
+import { NavigationBar, type NavigationItem } from "./design/components/NavigationBar";
 import { TopAppBar } from "./design/components/TopAppBar";
 import { ThemeToggle } from "./design/theme/ThemeToggle";
+import { CycleDetailPage } from "./pages/CycleDetailPage";
+import { HistoryPage } from "./pages/HistoryPage";
+import { HomePage } from "./pages/HomePage";
+import { NewCyclePage } from "./pages/NewCyclePage";
+import { ReviewPage } from "./pages/ReviewPage";
+import { EmptyState } from "./pages/Status";
+import { BackLinkContext } from "./pages/useBackLink";
 
-type ApiState = "checking" | HealthResponse["status"] | "error";
+const NAVIGATION_ITEMS: NavigationItem[] = [
+  { href: "/", label: "いまの検証", icon: homeIcon, selectedIcon: homeFillIcon },
+  { href: "/history", label: "これまで", icon: historyIcon, selectedIcon: historyFillIcon },
+];
 
-const LABELS: Record<ApiState, string> = {
-  checking: "確認中",
-  ok: "正常",
-  error: "接続エラー",
-};
-
-const ICONS: Record<ApiState, string> = {
-  checking: syncIcon,
-  ok: checkCircleIcon,
-  error: errorIcon,
-};
-
+/** アプリ全体の枠。BrowserRouter(テストでは MemoryRouter)の中で使います。 */
 export function App() {
-  const [apiState, setApiState] = useState<ApiState>("checking");
-
-  useEffect(() => {
-    const controller = new AbortController();
-
-    async function loadHealth() {
-      try {
-        const response = await fetch("/api/health", { signal: controller.signal });
-        if (!response.ok) {
-          throw new Error(`HTTP ${response.status}`);
-        }
-        const health = (await response.json()) as HealthResponse;
-        setApiState(health.status);
-      } catch {
-        if (!controller.signal.aborted) {
-          setApiState("error");
-        }
-      }
-    }
-
-    void loadHealth();
-    return () => controller.abort();
-  }, []);
+  const navigate = useNavigate();
+  const { pathname } = useLocation();
+  const currentHref = pathname.startsWith("/history") ? "/history" : "/";
+  const [backHref, setBackHref] = useState<string>();
 
   return (
-    <>
-      <TopAppBar title="Happiness Spiral" trailing={<ThemeToggle />} />
-      <main className={styles.main}>
-        <Card variant="filled" className={styles.status} data-state={apiState}>
-          <Icon src={ICONS[apiState]} size={24} />
-          <p>API: {LABELS[apiState]}</p>
-        </Card>
-      </main>
-    </>
+    <RouterProvider
+      navigate={(path) => {
+        void navigate(path);
+      }}
+      useHref={useHref}
+    >
+      <div className={styles.shell}>
+        <TopAppBar
+          title="Happiness Spiral"
+          leading={
+            backHref && (
+              <IconButton
+                icon={arrowBackIcon}
+                label="戻る"
+                onPress={() => {
+                  void navigate(backHref);
+                }}
+              />
+            )
+          }
+          trailing={<ThemeToggle />}
+        />
+        <NavigationBar items={NAVIGATION_ITEMS} currentHref={currentHref} />
+        <main className={styles.main}>
+          <BackLinkContext.Provider value={setBackHref}>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/cycles/new" element={<NewCyclePage />} />
+              <Route path="/cycles/:id" element={<CycleDetailPage />} />
+              <Route path="/cycles/:id/review" element={<ReviewPage />} />
+              <Route path="/history" element={<HistoryPage />} />
+              <Route path="*" element={<EmptyState>ページが見つかりません</EmptyState>} />
+            </Routes>
+          </BackLinkContext.Provider>
+        </main>
+      </div>
+    </RouterProvider>
   );
 }

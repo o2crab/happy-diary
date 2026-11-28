@@ -1,0 +1,60 @@
+/*
+ * Checkbox と Radio に共通の、ラベル付き選択コントロール。
+ * React Aria は data-* 属性をラベル(.control)に付けるため、state layer とフォーカスリングは
+ * interaction.module.css の子要素版(targetHost / stateLayerTarget / focusRingTarget)で子の .target に描きます。
+ */
+.control {
+  composes: targetHost from "./interaction.module.css";
+  display: inline-flex;
+  align-items: center;
+  gap: var(--app-space-1);
+  min-height: 48px;
+  padding-inline-end: var(--app-space-2);
+  color: var(--md-sys-color-on-surface);
+  font-family: var(--md-sys-typescale-body-large-font);
+  font-size: var(--md-sys-typescale-body-large-size);
+  line-height: var(--md-sys-typescale-body-large-line-height);
+  font-weight: var(--md-sys-typescale-body-large-weight);
+  letter-spacing: var(--md-sys-typescale-body-large-tracking);
+  cursor: pointer;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  --selection-control-color: var(--md-sys-color-on-surface-variant);
+  --selection-control-selected-color: var(--md-sys-color-primary);
+}
+
+.control[data-invalid] {
+  --selection-control-color: var(--md-sys-color-error);
+  --selection-control-selected-color: var(--md-sys-color-error);
+}
+
+.target {
+  composes: stateLayerTarget focusRingTarget from "./interaction.module.css";
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--md-sys-shape-corner-full);
+  color: var(--selection-control-color);
+}
+
+.control[data-selected] .target {
+  color: var(--selection-control-selected-color);
+}
+
+.control[data-disabled] {
+  color: color-mix(
+    in srgb,
+    var(--md-sys-color-on-surface) calc(var(--md-sys-state-disabled-content-opacity) * 100%),
+    transparent
+  );
+  cursor: default;
+  --selection-control-color: color-mix(
+    in srgb,
+    var(--md-sys-color-on-surface) calc(var(--md-sys-state-disabled-content-opacity) * 100%),
+    transparent
+  );
+  --selection-control-selected-color: var(--selection-control-color);
+}

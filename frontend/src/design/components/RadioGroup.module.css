@@ -1,0 +1,80 @@
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--app-space-1);
+  min-width: 0;
+}
+
+.label {
+  color: var(--md-sys-color-on-surface-variant);
+  font-family: var(--md-sys-typescale-title-small-font);
+  font-size: var(--md-sys-typescale-title-small-size);
+  line-height: var(--md-sys-typescale-title-small-line-height);
+  font-weight: var(--md-sys-typescale-title-small-weight);
+  letter-spacing: var(--md-sys-typescale-title-small-tracking);
+}
+
+.group[data-invalid] .label {
+  color: var(--md-sys-color-error);
+}
+
+.options {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.options[data-orientation="horizontal"] {
+  flex-direction: row;
+  flex-wrap: wrap;
+  column-gap: var(--app-space-2);
+}
+
+.supporting {
+  color: var(--md-sys-color-on-surface-variant);
+  font-family: var(--md-sys-typescale-body-small-font);
+  font-size: var(--md-sys-typescale-body-small-size);
+  line-height: var(--md-sys-typescale-body-small-line-height);
+  letter-spacing: var(--md-sys-typescale-body-small-tracking);
+}
+
+.error {
+  color: var(--md-sys-color-error);
+}
+
+.group[data-disabled] .label {
+  color: color-mix(
+    in srgb,
+    var(--md-sys-color-on-surface) calc(var(--md-sys-state-disabled-content-opacity) * 100%),
+    transparent
+  );
+}
+
+.radio {
+  flex: none;
+}
+
+/* 外周 20px の輪。選択時は内側に 10px の点を描きます */
+.circle {
+  position: relative;
+  box-sizing: border-box;
+  width: 20px;
+  height: 20px;
+  border: 2px solid currentColor;
+  border-radius: var(--md-sys-shape-corner-full);
+}
+
+.circle::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  border-radius: inherit;
+  background-color: currentColor;
+  transform: scale(0);
+  transition: transform var(--md-sys-motion-duration-short3)
+    var(--md-sys-motion-easing-emphasized-decelerate);
+}
+
+.radio[data-selected] .circle::after {
+  transform: scale(1);
+}

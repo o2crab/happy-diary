@@ -1,0 +1,32 @@
+.checkbox {
+  --checkbox-on-color: var(--md-sys-color-on-primary);
+}
+
+.checkbox[data-invalid] {
+  --checkbox-on-color: var(--md-sys-color-on-error);
+}
+
+.checkbox[data-disabled] {
+  --checkbox-on-color: var(--md-sys-color-surface);
+}
+
+.box {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 18px;
+  height: 18px;
+  border: 2px solid currentColor;
+  border-radius: var(--md-sys-shape-corner-extra-small);
+  transition: background-color var(--md-sys-motion-duration-short3)
+    var(--md-sys-motion-easing-standard);
+}
+
+.checkbox[data-selected] .box {
+  background-color: currentColor;
+}
+
+.check {
+  color: var(--checkbox-on-color);
+}

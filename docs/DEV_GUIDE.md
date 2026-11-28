@@ -8,6 +8,10 @@
 - バックエンド: Python、FastAPI、SQLAlchemy(`backend/`)
 - DB: SQLite。機能が不足したら本格的な DBMS への移行を検討する。
 - API 型: FastAPI の OpenAPI から swagger-typescript-api で `frontend/src/api/schema.ts` を生成する。
+- ルーティング: react-router を使い、React Aria の `RouterProvider` でつないで、React Aria の部品のリンクも同じルーターで画面を切り替える。本番では FastAPI が `/api` 以外の見つからないパスに `index.html` を返す(SPA フォールバック)。ただし最後の部分に拡張子があるパス(`/assets/missing.js` など)は 404 のままにする。
+- 戻る操作: 一覧より下の階層の画面は、`src/pages/useBackLink.ts` の `useBackLink(行き先)` で上部のバーに「戻る」を出す。URL を直接開いても同じ場所へ戻れるように、行き先はブラウザの履歴ではなく画面ごとに決める。
+- 日付: 記録できる「今日」は、設定 `APP_TIMEZONE`(既定 `Asia/Tokyo`)のタイムゾーンで判定する。サーバーのローカル時刻には依存しない。
+- ファイル構成: バックエンドは `app/models.py`(テーブル)、`app/schemas.py`(API の入出力)、`app/routers/`(エンドポイント)。フロントエンドは `src/pages/`(画面)、`src/api/client.ts`(API の呼び出し)。部品は[デザインシステム](DESIGN_SYSTEM.md)を参照する。
 
 テーブルは起動時に `create_all` で作成するため、既存テーブルの変更は反映されない。開発中は `mise run db:reset` で DB を作り直す。本番データを持った後のスキーマ変更は、バックアップを取得して手動 SQL で行う。
 
