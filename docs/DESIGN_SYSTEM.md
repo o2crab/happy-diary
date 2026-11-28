@@ -63,6 +63,29 @@ Happiness Spiral の UI は [Material Design 3](https://m3.material.io/)(M3)に�
 
 `ThemeProvider` が設定を保持し、`<html data-theme>` に `light` か `dark` を付ける。システム設定に従う場合は属性を付けず、`prefers-color-scheme` で切り替わる。設定は `localStorage` に保存し、使えない環境ではそのセッション内だけ反映する。`index.html` の初期化スクリプトが描画前に保存済みの設定を反映し、ちらつきを防ぐ。
 
+## 共通部品
+
+`frontend/src/design/components/` に置く。現在あるのは `Button`、`IconButton`、`TextField`、`Card`、`TopAppBar`、`Icon` で、ほかの部品は画面開発で必要になった時点で追加する。
+
+開発サーバーで <http://127.0.0.1:5173/__design> を開くと、トークンと部品の見本(`frontend/src/design/Gallery.tsx`)をライト、ダークで確認できる。見本は本番ビルドに含めない。部品を追加、変更したら見本にも載せる。
+
+### アイコン
+
+`@material-symbols/svg-400` の Rounded の SVG を import して `Icon` や部品の `icon` に渡す。使うアイコンだけがビルドに含まれる。アイコンは装飾として読み上げないため、意味はボタンのラベルなどで伝える(`IconButton` は `label` が必須)。
+
+```tsx
+import addIcon from "@material-symbols/svg-400/rounded/add.svg";
+
+<Button icon={addIcon}>仮説を追加</Button>
+```
+
+### 部品の追加手順
+
+1. 操作できる部品は React Aria の部品をラップする。キーボード操作、フォーカス管理、ARIA 属性は React Aria に任せる。
+2. hover、focus、pressed の表現は `shared/interaction.module.css` の `stateLayer` と `focusRing` を `composes` で使う。React Aria が付ける `data-hovered`、`data-pressed`、`data-focus-visible`、`data-disabled` で状態を判定する。
+3. 見た目は M3 の部品仕様(サイズ、色の役割、無効状態)に合わせ、角丸は上の割り当て表に従う。
+4. テストでは、ロールとラベルで部品を特定できること、無効状態、主要な操作を確認する。
+
 ## 書き方のルール
 
 - 色、文字サイズ、角丸、影、余白、時間は直書きせず、トークンを参照する。

@@ -1,0 +1,45 @@
+/*
+ * M3 の state layer とフォーカスリング。React Aria が付ける data-* 属性で状態を判定します。
+ * 部品の CSS から composes で使います。
+ */
+.stateLayer {
+  position: relative;
+  isolation: isolate;
+}
+
+.stateLayer::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  border-radius: inherit;
+  background-color: currentColor;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--md-sys-motion-duration-short2) linear;
+}
+
+.stateLayer[data-hovered]::before {
+  opacity: var(--md-sys-state-hover-state-layer-opacity);
+}
+
+.stateLayer[data-focus-visible]::before {
+  opacity: var(--md-sys-state-focus-state-layer-opacity);
+}
+
+.stateLayer[data-pressed]::before {
+  opacity: var(--md-sys-state-pressed-state-layer-opacity);
+}
+
+.stateLayer[data-disabled]::before {
+  opacity: 0;
+}
+
+.focusRing {
+  outline: none;
+}
+
+.focusRing[data-focus-visible] {
+  outline: 3px solid var(--md-sys-color-secondary);
+  outline-offset: 2px;
+}

@@ -1,0 +1,176 @@
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--app-space-1);
+  min-width: 0;
+  --text-field-accent: var(--md-sys-color-primary);
+  --text-field-label-color: var(--md-sys-color-on-surface-variant);
+}
+
+.filled {
+  --text-field-label-top: 16px;
+  --text-field-label-top-floated: 8px;
+  --text-field-label-inset: var(--app-space-4);
+  --text-field-label-padding: 0;
+  --text-field-label-background: transparent;
+  --text-field-input-padding: 24px 8px;
+}
+
+.outlined {
+  --text-field-label-top: 15px;
+  --text-field-label-top-floated: -9px;
+  --text-field-label-inset: calc(var(--app-space-3) - 1px);
+  --text-field-label-padding: var(--app-space-1);
+  /* 枠線の上にラベルを重ねるため、置き場所の背景色に合わせます */
+  --text-field-label-background: var(
+    --app-text-field-label-background,
+    var(--md-sys-color-surface)
+  );
+  --text-field-input-padding: 15px;
+}
+
+.field[data-invalid] {
+  --text-field-accent: var(--md-sys-color-error);
+  --text-field-label-color: var(--md-sys-color-error);
+}
+
+.container {
+  position: relative;
+  display: flex;
+  min-height: 56px;
+  padding-inline: var(--app-space-4);
+  transition: border-color var(--md-sys-motion-duration-short2) linear;
+}
+
+.label {
+  position: absolute;
+  inset-inline-start: var(--text-field-label-inset);
+  top: var(--text-field-label-top);
+  max-width: calc(100% - 2 * var(--text-field-label-inset));
+  padding-inline: var(--text-field-label-padding);
+  overflow: hidden;
+  background-color: var(--text-field-label-background);
+  color: var(--text-field-label-color);
+  font-family: var(--md-sys-typescale-body-large-font);
+  font-size: var(--md-sys-typescale-body-large-size);
+  line-height: var(--md-sys-typescale-body-large-line-height);
+  letter-spacing: var(--md-sys-typescale-body-large-tracking);
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  pointer-events: none;
+  transform-origin: left top;
+  transition:
+    top var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard),
+    font-size var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard),
+    line-height var(--md-sys-motion-duration-short4) var(--md-sys-motion-easing-standard);
+}
+
+.container:focus-within .label {
+  color: var(--text-field-accent);
+}
+
+.field[data-filled] .label,
+.container:focus-within .label {
+  top: var(--text-field-label-top-floated);
+  font-size: var(--md-sys-typescale-body-small-size);
+  line-height: var(--md-sys-typescale-body-small-line-height);
+  letter-spacing: var(--md-sys-typescale-body-small-tracking);
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  padding-block: var(--text-field-input-padding);
+  border: none;
+  background: transparent;
+  color: var(--md-sys-color-on-surface);
+  caret-color: var(--text-field-accent);
+  font-family: var(--md-sys-typescale-body-large-font);
+  font-size: var(--md-sys-typescale-body-large-size);
+  line-height: var(--md-sys-typescale-body-large-line-height);
+  letter-spacing: var(--md-sys-typescale-body-large-tracking);
+  outline: none;
+}
+
+.input::placeholder {
+  color: var(--md-sys-color-on-surface-variant);
+}
+
+.field[data-multiline] .input {
+  resize: vertical;
+  field-sizing: content;
+}
+
+.supporting {
+  padding-inline: var(--app-space-4);
+  color: var(--md-sys-color-on-surface-variant);
+  font-family: var(--md-sys-typescale-body-small-font);
+  font-size: var(--md-sys-typescale-body-small-size);
+  line-height: var(--md-sys-typescale-body-small-line-height);
+  letter-spacing: var(--md-sys-typescale-body-small-tracking);
+}
+
+.error {
+  color: var(--md-sys-color-error);
+}
+
+/* コンテナの形 */
+.filled .container {
+  border-radius: var(--md-sys-shape-corner-small) var(--md-sys-shape-corner-small) 0 0;
+  background-color: var(--md-sys-color-surface-container-highest);
+  box-shadow: inset 0 -1px 0 var(--md-sys-color-on-surface-variant);
+}
+
+.outlined .container {
+  border: 1px solid var(--md-sys-color-outline);
+  border-radius: var(--md-sys-shape-corner-small);
+}
+
+/* フォーカス中とエラー時 */
+.filled .container:focus-within,
+.filled[data-invalid] .container {
+  box-shadow: inset 0 -2px 0 var(--text-field-accent);
+}
+
+.outlined .container:focus-within,
+.outlined[data-invalid] .container {
+  border-color: var(--text-field-accent);
+  box-shadow: inset 0 0 0 1px var(--text-field-accent);
+}
+
+/* disabled */
+.field[data-disabled] {
+  --text-field-label-color: color-mix(
+    in srgb,
+    var(--md-sys-color-on-surface) calc(var(--md-sys-state-disabled-content-opacity) * 100%),
+    transparent
+  );
+}
+
+.field[data-disabled] .input,
+.field[data-disabled] .supporting {
+  color: color-mix(
+    in srgb,
+    var(--md-sys-color-on-surface) calc(var(--md-sys-state-disabled-content-opacity) * 100%),
+    transparent
+  );
+}
+
+.filled[data-disabled] .container {
+  background-color: color-mix(in srgb, var(--md-sys-color-on-surface) 4%, transparent);
+  box-shadow: inset 0 -1px 0
+    color-mix(
+      in srgb,
+      var(--md-sys-color-on-surface) calc(var(--md-sys-state-disabled-content-opacity) * 100%),
+      transparent
+    );
+}
+
+.outlined[data-disabled] .container {
+  border-color: color-mix(
+    in srgb,
+    var(--md-sys-color-on-surface) calc(var(--md-sys-state-disabled-container-opacity) * 100%),
+    transparent
+  );
+}
