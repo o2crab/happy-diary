@@ -40,10 +40,15 @@ test("仮説を作り、記録して振り返ると、これまでの一覧に�
   await expect(page.getByRole("heading", { level: 2, name: hypothesis })).toBeVisible();
   await expect(page.getByText("判定: 支持された")).toBeVisible();
 
-  await page
-    .getByRole("navigation", { name: "メイン" })
-    .getByRole("link", { name: "これまで" })
-    .click();
+  // 完了したサイクルの詳細では、上部のバーの「戻る」で「これまで」へ戻る。
+  await page.getByRole("button", { name: "戻る" }).click();
   await expect(page.getByRole("heading", { level: 2, name: "これまで" })).toBeVisible();
   await expect(page.getByRole("heading", { level: 3, name: hypothesis })).toBeVisible();
+
+  await page
+    .getByRole("navigation", { name: "メイン" })
+    .getByRole("link", { name: "いまの検証" })
+    .click();
+  await expect(page.getByRole("heading", { level: 2, name: "いまの検証" })).toBeVisible();
+  await expect(page.getByRole("button", { name: "戻る" })).toHaveCount(0);
 });

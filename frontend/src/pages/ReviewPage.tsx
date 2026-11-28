@@ -10,6 +10,7 @@ import { formatPeriod, parseCycleId, VERDICT_LABELS, type Verdict } from "./form
 import styles from "./pages.module.css";
 import { StatsList } from "./StatsList";
 import { ErrorMessage, Loading } from "./Status";
+import { useBackLink } from "./useBackLink";
 import { useLoad } from "./useLoad";
 
 const VERDICTS: Verdict[] = ["supported", "not_supported", "inconclusive"];
@@ -17,6 +18,7 @@ const VERDICTS: Verdict[] = ["supported", "not_supported", "inconclusive"];
 /** 振り返り。判定とわかったことを残してサイクルを完了します。 */
 export function ReviewPage() {
   const cycleId = parseCycleId(useParams().id);
+  useBackLink(cycleId === undefined ? "/" : `/cycles/${cycleId}`);
   if (cycleId === undefined) return <ErrorMessage>検証が見つかりません</ErrorMessage>;
   return <ReviewLoader cycleId={cycleId} />;
 }

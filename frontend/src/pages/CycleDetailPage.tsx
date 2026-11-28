@@ -8,17 +8,26 @@ import { formatDate, formatPeriod, happinessLabel, parseCycleId, VERDICT_LABELS 
 import styles from "./pages.module.css";
 import { StatsList } from "./StatsList";
 import { EmptyState, ErrorMessage, Loading } from "./Status";
+import { useBackLink } from "./useBackLink";
 import { useLoad } from "./useLoad";
 
 /** サイクルの詳細。記録の入力と、記録の一覧を表示します。 */
 export function CycleDetailPage() {
   const cycleId = parseCycleId(useParams().id);
-  if (cycleId === undefined) return <ErrorMessage>検証が見つかりません</ErrorMessage>;
+  if (cycleId === undefined) return <CycleNotFound />;
   return <CycleDetailLoader cycleId={cycleId} />;
+}
+
+function CycleNotFound() {
+  useBackLink("/");
+  return <ErrorMessage>検証が見つかりません</ErrorMessage>;
 }
 
 function CycleDetailLoader({ cycleId }: { cycleId: number }) {
   const [state, setCycle] = useLoad((signal) => api.getCycle(cycleId, signal), [cycleId]);
+  // 完了したサイクルは「これまで」の一覧から開くため、そこへ戻します。
+  const isCompleted = state.status === "success" && state.data.status === "completed";
+  useBackLink(isCompleted ? "/history" : "/");
 
   if (state.status === "loading") return <Loading />;
   if (state.status === "error") {

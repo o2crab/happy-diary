@@ -6,12 +6,14 @@ import { TextField } from "../design/components/TextField";
 import { addDays, today } from "./format";
 import styles from "./pages.module.css";
 import { ErrorMessage } from "./Status";
+import { useBackLink } from "./useBackLink";
 
 type Errors = Partial<Record<"hypothesis" | "method" | "startDate" | "endDate", string>>;
 
 /** サイクルの作成。仮説、検証方法、期間を登録します。 */
 export function NewCyclePage() {
   const navigate = useNavigate();
+  useBackLink("/");
   const [hypothesis, setHypothesis] = useState("");
   const [method, setMethod] = useState("");
   const [startDate, setStartDate] = useState(today);
